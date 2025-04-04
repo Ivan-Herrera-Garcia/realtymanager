@@ -9,7 +9,7 @@ export default function Asesores({ asesores, config}) {
     const [descripcion, setDescripcion] = useState(config.descripcion);
 
     useEffect(() => {
-        console.log(config);
+        
         setColorPrimario(config.primaryColor);
         setColorSecundario(config.secondaryColor);
         setTitulo(config.title);
@@ -60,7 +60,7 @@ export default function Asesores({ asesores, config}) {
                     {/* Menú Desktop */}
                     <div className="hidden lg:flex space-x-6">
                         <Link href="/" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Home</a>
+                            <a className="text-lg font-semibold text-white hover:underline">Inicio</a>
                         </Link>
                         <Link href="/Inmuebles" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Inmuebles</a>
@@ -79,7 +79,7 @@ export default function Asesores({ asesores, config}) {
                         <button onClick={toggleMenu} className="text-2xl text-gray-700">X</button>
                         <div className="flex flex-col space-y-4">
                             <Link href="/" legacyBehavior>
-                                <a className="text-lg text-gray-800 hover:underline">Home</a>
+                                <a className="text-lg text-gray-800 hover:underline">Inicio</a>
                             </Link>
                             <Link href="/Inmuebles" legacyBehavior>
                                 <a className="text-lg text-gray-800 hover:underline">Inmuebles</a>

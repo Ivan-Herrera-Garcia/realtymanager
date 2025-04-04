@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { useState } from "react";
-import config from "../../postcss.config.mjs";
+import { useState, useEffect } from "react";
+import Head from "next/head";
 
 export default function Asesores({ configuracion }) {
     const temas = {
@@ -43,20 +43,45 @@ export default function Asesores({ configuracion }) {
         return Object.keys(temas).find(key => temas[key] === valorBuscado) || null;
     }
 
-    const [tema, setTema] = useState(obtenerClave(configuracion[0].primaryColor, configuracion[0].secondaryColor));
-    const [titulo, setTitulo] = useState(configuracion[0].title);
-    const [descripcion, setDescripcion] = useState(configuracion[0].descripcion);
-    const [imagen, setImagen] = useState(configuracion[0].urlPicture);
+    const [colorPrimario, setColorPrimario] = useState(configuracion.primaryColor);
+    const [colorSecundario, setColorSecundario] = useState(configuracion.secondaryColor);
+    const [tema, setTema] = useState(obtenerClave(configuracion.primaryColor, configuracion.secondaryColor));
+    const [titulo, setTitulo] = useState(configuracion.title);
+    const [descripcion, setDescripcion] = useState(configuracion.descripcion);
+    const [imagen, setImagen] = useState(configuracion.urlPicture);
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
+    
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
-            <header className="bg-blue-600 text-white py-4 shadow-md">
+            <Head>
+                <title>{configuracion.title}</title>
+                <meta name="description" content={configuracion.descripcion} />
+
+                <meta name="twitter:site" content="website" />
+                <meta name="twitter:title" content={configuracion.title} />
+                <meta name="twitter:description" content={configuracion.descripcion} />
+                <meta name="twitter:image" content={configuracion.urlPicture} />
+
+                <meta name="title" content={configuracion.title} />  
+                <meta name="description" content={configuracion.descripcion} />
+
+                <meta property="og:title" content={configuracion.title} />
+                <meta property="og:image" content={configuracion.urlPicture} />
+                <meta property="og:description" content={configuracion.descripcion} />
+                <meta property="og:type" content="website" />
+
+                {/* <link rel="icon" type="image/png" href="/images/favicon.ico" />
+                <link rel="shortcut icon" href="/images/favicon.ico" />
+                <link rel="apple-touch-icon" href="/PropiedadesMexico/logo192.svg" /> */}
+
+            </Head>
+            {/* Header */}
+            <header  style={{backgroundColor: colorPrimario}}  className={`py-4 shadow-md flex justify-between items-center px-6`}>
                 <div className="container mx-auto flex justify-between items-center px-6">
-                    <h1 className="text-lg font-semibold">Realty Manager</h1>
+                    <h1 className="text-lg font-semibold">{titulo}</h1>
                     
                     {/* Icono de menú para móviles */}
                     <button 
@@ -69,16 +94,16 @@ export default function Asesores({ configuracion }) {
                     {/* Menú Desktop */}
                     <div className="hidden lg:flex space-x-6">
                         <Link href="/" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Home</a>
+                            <a className="text-lg font-semibold text-white hover:underline">Inicio</a>
                         </Link>
                         <Link href="/Inmuebles" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Inmuebles</a>
                         </Link>
-                        <Link href="/Login" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Cuentas</a>
+                        <Link href={"/Asesores"} legacyBehavior>
+                            <a className="text-lg font-semibold text-white hover:underline">Asesores</a>
                         </Link>
-                        <Link href="/Configuracion" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Configuración</a>
+                        <Link href={"/Login"} legacyBehavior>
+                            <a className="text-lg font-semibold text-white hover:underline">Cuentas</a>
                         </Link>
                     </div>
                 </div>
@@ -91,30 +116,32 @@ export default function Asesores({ configuracion }) {
                         <button onClick={toggleMenu} className="text-2xl text-gray-700">X</button>
                         <div className="flex flex-col space-y-4">
                             <Link href="/" legacyBehavior>
-                                <a className="text-lg text-blue-600 hover:underline">Home</a>
+                                <a className="text-lg text-gray-800 hover:underline">Inicio</a>
                             </Link>
                             <Link href="/Inmuebles" legacyBehavior>
-                                <a className="text-lg text-blue-600 hover:underline">Inmuebles</a>
+                                <a className="text-lg text-gray-800 hover:underline">Inmuebles</a>
                             </Link>
-                            <Link href="/Login" legacyBehavior>
-                                <a className="text-lg text-blue-600 hover:underline">Cuentas</a>
+                            <Link href={"/Asesores"} legacyBehavior>
+                                <a className="text-lg text-gray-800 hover:underline">Asesores</a>
                             </Link>
-                            <Link href="/Configuracion" legacyBehavior>
-                                <a className="text-lg text-blue-600 hover:underline">Configuración</a>
+                            <Link href={"/Login"} legacyBehavior>
+                                <a className="text-lg text-gray-800 hover:underline">Cuentas</a>
                             </Link>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Main Content */}
+            <main className="flex-1 flex flex-col items-center justify-center p-6">
+            <div className="w-full max-w-5xl">
 
-            {/* Main content */}
-            <main className="flex-grow p-6" style={{ padding: "20px", textAlign: "start" }}>
                 {/* Sección de Tema de Colores */}
                 <section style={{ marginBottom: "20px" }}>
-                    <h2>Seleccionar Tema</h2>
+                    <h2 className="text-lg font-semibold text-gray-800">Tema de Colores</h2>
                     <select
                         value={tema}
+                        className="text-lg font-semibold text-gray-800"
                         onChange={(e) => setTema(e.target.value)}
                         style={{ padding: "10px", fontSize: "16px", border: "1px solid #ccc" }}
                     >
@@ -154,10 +181,12 @@ export default function Asesores({ configuracion }) {
 
                 {/* Sección de Título */}
                 <section style={{ marginBottom: "20px" }}>
-                <h2>Título</h2>
+                <h2 className="text-lg font-semibold text-gray-800">Titulo</h2>
                 <input
+                    className="text-lg text-gray-800"
                     type="text"
                     value={titulo}
+                    maxLength={34}
                     onChange={(e) => setTitulo(e.target.value)}
                     placeholder="Ingresa el título"
                     style={{ width: "100%", padding: "10px", fontSize: "16px", border: "1px solid #ccc" }}
@@ -166,9 +195,10 @@ export default function Asesores({ configuracion }) {
 
                 {/* Sección de Descripción */}
                 <section style={{ marginBottom: "20px" }}>
-                <h2>Descripción</h2>
+                <h2 className="text-lg font-semibold text-gray-800">Descripción</h2>
                 <textarea
                     value={descripcion}
+                    className="text-lg text-gray-800"
                     onChange={(e) => setDescripcion(e.target.value)}
                     placeholder="Ingresa una descripción"
                     rows="4"
@@ -178,23 +208,47 @@ export default function Asesores({ configuracion }) {
 
                 {/* Sección de Imagen */}
                 <section style={{ marginBottom: "20px" }}>
-                <h2>Imagen del Sitio</h2>
+                <h2 className="text-lg font-semibold text-gray-800">Imagen</h2>
                 <input
                     type="file"
-                    onChange={(e) => setImagen(URL.createObjectURL(e.target.files[0]))}
+                    className="text-lg text-gray-800"
+                    onChange={(e) => setImagen(URL.createObjectURL(e.target.files))}
                     style={{ padding: "10px", fontSize: "16px", }}
                 />
                 {imagen && <img src={imagen} alt="Imagen Previa" style={{ marginTop: "10px", maxWidth: "100%", height: "auto" }} />}
                 </section>
                 <button
                     onClick={async () => {
-                        console.log(tema);
-                        console.log(temas[tema]);
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                              toast.onmouseenter = Swal.stopTimer;
+                              toast.onmouseleave = Swal.resumeTimer;
+                            }
+                          });
+                        if (titulo == "" || titulo.length < 3) {
+                              Toast.fire({
+                                icon: "error",
+                                title: "El título es obligatorio y debe tener al menos 3 caracteres"
+                              });
+                              return;
+                        }
+                        if (descripcion == "" || descripcion.length < 3) {
+                              Toast.fire({
+                                icon: "error",
+                                title: "La descripción es obligatoria y debe tener al menos 3 caracteres"
+                              });
+                              return;
+                        }
                         const response = await fetch("https://mini-crm-dev.deno.dev/editconfiguracion", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                _id: configuracion[0]._id,
+                                _id: configuracion._id,
                                 primaryColor: temas[tema].split("|")[0],
                                 secondaryColor: temas[tema].split("|")[1],
                                 title: titulo,
@@ -204,35 +258,33 @@ export default function Asesores({ configuracion }) {
                         });
                         const data = await response.text();
                         if (data && data != null) {
-                            window.location.href = "/Configuracion";
+                            Toast.fire({
+                                icon: "success",
+                                title: "Configuración actualizada con éxito"
+                            });
+                            window.location.href = "/";
                         } else {
                             alert("Error al actualizar la configuración");
                         }
                     }}
                     style={{ padding: "10px 20px", backgroundColor: "#007BFF", color: "#fff", border: "none", borderRadius: "5px" }}
                 >Actualizar Configuración</button>
+    </div>
             </main>
 
            
             {/* Footer */}
-            <footer className="bg-blue-600 text-white text-center py-4 shadow-md">
-                <p className="text-sm">© 2025 Realty Manager. Todos los derechos reservados.</p>
+            <footer style={{backgroundColor: colorPrimario, color: colorSecundario}} className={`text-center py-4 mt-6 shadow-md`}>
+                <p className="text-sm">© 2025 {titulo}. Todos los derechos reservados.</p>
             </footer>
         </div>
     );
 }
 
 export async function getServerSideProps() {
-    const response = await fetch("https://mini-crm-dev.deno.dev/configuracion", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    });
+    const responseConfig = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
+    const config = await responseConfig.text();
 
-    const text = await response.text(); // Obtener la respuesta en texto
 
-    const fixedJson = `[${text.replace(/}{/g, "},{")}]`; // Arreglar formato
-
-    const data = JSON.parse(fixedJson);
-
-    return { props: { configuracion: data } };
+    return { props: { configuracion: JSON.parse(config) } };
 }

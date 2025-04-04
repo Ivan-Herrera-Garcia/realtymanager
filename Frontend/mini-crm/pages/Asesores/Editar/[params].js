@@ -22,6 +22,33 @@ export default function EditarAsesor({asesor, config}) {
     const [error, setError] = useState(null);
 
     const handleEditar = async () => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+
+          if (name == "" || name.length < 3) {
+            Toast.fire({
+                icon: "error",
+                title: "El nombre es requerido o demasiado corto"
+            });
+            return;
+        }
+        if (phoneNumber == "" || phoneNumber.length < 10 ) {
+            Toast.fire({
+                icon: "error",
+                title: "El teléfono es requerido o demasiado corto"
+            });
+            return;
+        }
+
         try {
             const res = await fetch(`https://mini-crm-dev.deno.dev/editasesor`, {
                 method: 'POST',
@@ -36,6 +63,10 @@ export default function EditarAsesor({asesor, config}) {
             });
             const data = await res.json();
             if (data) {
+                Toast.fire({
+                    icon: "success",
+                    title: "Asesor modificado correctamente"
+                });
                 window.location.href = "/Asesores";
             } else {
                 setError(data.error);
@@ -85,10 +116,13 @@ export default function EditarAsesor({asesor, config}) {
                     {/* Menú Desktop */}
                     <div className="hidden lg:flex space-x-6">
                         <Link href="/" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Home</a>
+                            <a className="text-lg font-semibold text-white hover:underline">Inicio</a>
                         </Link>
                         <Link href="/Inmuebles" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Inmuebles</a>
+                        </Link>
+                        <Link href="/Asesores" legacyBehavior>
+                            <a className="text-lg font-semibold text-white hover:underline">Asesores</a>
                         </Link>
                         <Link href="/Configuracion" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Configuración</a>
@@ -104,10 +138,13 @@ export default function EditarAsesor({asesor, config}) {
                         <button onClick={toggleMenu} className="text-2xl text-gray-700">X</button>
                         <div className="flex flex-col space-y-4">
                             <Link href="/" legacyBehavior>
-                                <a className="text-lg text-gray-800 hover:underline">Home</a>
+                                <a className="text-lg text-gray-800 hover:underline">Inicio</a>
                             </Link>
                             <Link href="/Inmuebles" legacyBehavior>
                                 <a className="text-lg text-gray-800 hover:underline">Inmuebles</a>
+                            </Link>
+                            <Link href="/Asesores" legacyBehavior>
+                                <a className="text-lg font-semibold text-white hover:underline">Asesores</a>
                             </Link>
                             <Link href="/Configuracion" legacyBehavior>
                                 <a className="text-lg text-gray-800 hover:underline">Configuración</a>

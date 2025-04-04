@@ -3,26 +3,38 @@ import Link from "next/link";
 import Head from "next/head";
 
 export default function NuevoAsesor({config}) {
-    const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
-    const [colorSecundario, setColorSecundario] = useState(config.secondaryColor);
-    const [titulo, setTitulo] = useState(config.title);
-
-    useEffect(() => {
-        console.log(config);
-        setColorPrimario(config.primaryColor);
-        setColorSecundario(config.secondaryColor);
-        setTitulo(config.title);
-    }, [config]);
-    
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [error, setError] = useState(null);
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
     const handleCrear = async () => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+
+          if (name == "" || name.length < 3) {
+            Toast.fire({
+                icon: "error",
+                title: "El nombre es requerido o demasiado corto"
+            });
+            return;
+        }
+        if (phoneNumber == "" || phoneNumber.length < 10 ) {
+            Toast.fire({
+                icon: "error",
+                title: "El teléfono es requerido o demasiado corto"
+            });
+            return;
+        }
+
         try {
             const res = await fetch(`https://mini-crm-dev.deno.dev/addasesor`, {
                 method: 'POST',
@@ -36,6 +48,10 @@ export default function NuevoAsesor({config}) {
             });
             const data = await res.json();
             if (data && data != null) {
+            Toast.fire({
+                icon: "success",
+                title: "Asesor creado correctamente"
+            });
                 window.location.href = "/Asesores";
             } else {
                 setError(data.error);
@@ -45,9 +61,26 @@ export default function NuevoAsesor({config}) {
         }
     }
 
+    const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
+    const [colorSecundario, setColorSecundario] = useState(config.secondaryColor);
+    const [titulo, setTitulo] = useState(config.title);
+    const [descripcion, setDescripcion] = useState(config.descripcion);
+
+    useEffect(() => {
+        
+        setColorPrimario(config.primaryColor);
+        setColorSecundario(config.secondaryColor);
+        setTitulo(config.title);
+        setDescripcion(config.descripcion);
+    }, [config]);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
-             <Head>
+            <Head>
                 <title>{config.title}</title>
                 <meta name="description" content={config.descripcion} />
 
@@ -70,7 +103,7 @@ export default function NuevoAsesor({config}) {
 
             </Head>
             {/* Header */}
-            <header className={`bg-[${colorPrimario}] text-[${colorSecundario}] py-4 shadow-md flex justify-between items-center px-6`}>
+            <header  style={{backgroundColor: colorPrimario}}  className={`py-4 shadow-md flex justify-between items-center px-6`}>
                 <div className="container mx-auto flex justify-between items-center px-6">
                     <h1 className="text-lg font-semibold">{titulo}</h1>
                     
@@ -85,10 +118,13 @@ export default function NuevoAsesor({config}) {
                     {/* Menú Desktop */}
                     <div className="hidden lg:flex space-x-6">
                         <Link href="/" legacyBehavior>
-                            <a className="text-lg font-semibold text-white hover:underline">Home</a>
+                            <a className="text-lg font-semibold text-white hover:underline">Inicio</a>
                         </Link>
                         <Link href="/Inmuebles" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Inmuebles</a>
+                        </Link>
+                        <Link href="/Asesores" legacyBehavior>
+                            <a className="text-lg font-semibold text-white hover:underline">Asesores</a>
                         </Link>
                         <Link href="/Configuracion" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Configuración</a>
@@ -104,10 +140,13 @@ export default function NuevoAsesor({config}) {
                         <button onClick={toggleMenu} className="text-2xl text-gray-700">X</button>
                         <div className="flex flex-col space-y-4">
                             <Link href="/" legacyBehavior>
-                                <a className="text-lg text-gray-800 hover:underline">Home</a>
+                                <a className="text-lg text-gray-800 hover:underline">Inicio</a>
                             </Link>
                             <Link href="/Inmuebles" legacyBehavior>
                                 <a className="text-lg text-gray-800 hover:underline">Inmuebles</a>
+                            </Link>
+                            <Link href="/Asesores" legacyBehavior>
+                                <a className="text-lg font-semibold text-white hover:underline">Asesores</a>
                             </Link>
                             <Link href="/Configuracion" legacyBehavior>
                                 <a className="text-lg text-gray-800 hover:underline">Configuración</a>
@@ -119,7 +158,7 @@ export default function NuevoAsesor({config}) {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-center p-6">
-                <div className="w-full max-w-lg">
+                <div className="w-full max-w-xl">
                     <h2 className="text-2xl font-bold mb-6" style={{color: colorPrimario}}>Nuevo Asesor</h2>
                     
                     {/* Formulario de Nuevo Asesor */}
@@ -160,8 +199,8 @@ export default function NuevoAsesor({config}) {
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className={`bg-[${colorPrimario}] text-[${colorSecundario}] text-center py-4 mt-6 shadow-md`}>
+             {/* Footer */}
+             <footer  style={{backgroundColor: colorPrimario, color: colorSecundario}}  className={`text-center py-4 mt-6 shadow-md`}>
                 <p className="text-sm">© 2025 {titulo}. Todos los derechos reservados.</p>
             </footer>
         </div>
