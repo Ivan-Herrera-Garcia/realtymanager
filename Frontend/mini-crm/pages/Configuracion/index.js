@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import { IoIosLogOut } from "react-icons/io";
 
 export default function Asesores({ configuracion }) {
     const temas = {
@@ -54,6 +55,11 @@ export default function Asesores({ configuracion }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    const handleCerrarSesion = () => {
+        Cookies.remove("userData"); // Elimina la cookie "userData"
+        window.location.href = "/"; // Redirige a la página de inicio
+    }
     
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
@@ -106,6 +112,9 @@ export default function Asesores({ configuracion }) {
                         <Link href={"/Login"} legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Cuentas</a>
                         </Link>
+                        <button className="text-lg font-semibold hover:underline flex items-center" onClick={() => handleCerrarSesion()}>
+                            <IoIosLogOut size={25}/>
+                        </button>
                     </div>
                 </div>
             </header>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import { IoIosLogOut } from "react-icons/io";
 
 export default function NuevoInmueble({inmueblesData, config}) {
     const [error, setError] = useState(null);
@@ -104,6 +105,11 @@ export default function NuevoInmueble({inmueblesData, config}) {
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+    const handleCerrarSesion = () => {
+        Cookies.remove("userData"); // Elimina la cookie "userData"
+        window.location.href = "/"; // Redirige a la página de inicio
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
             <Head>
@@ -154,7 +160,9 @@ export default function NuevoInmueble({inmueblesData, config}) {
                         </Link>
                         <Link href="/Configuracion" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Configuración</a>
-                        </Link>
+                        </Link><button className="text-lg font-semibold hover:underline flex items-center" onClick={() => handleCerrarSesion()}>
+                        <IoIosLogOut size={25}/>
+                    </button>
                     </div>
                 </div>
             </header>

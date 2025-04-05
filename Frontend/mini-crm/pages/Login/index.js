@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { IoMdPersonAdd } from 'react-icons/io';
+import { IoIosLogOut } from 'react-icons/io';
 
 export default function Login({ users, config }) {
     const [usuarios, setUsuarios] = useState(users);
@@ -22,6 +23,12 @@ export default function Login({ users, config }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    
+    const handleCerrarSesion = () => {
+        Cookies.remove("userData"); // Elimina la cookie "userData"
+        window.location.href = "/"; // Redirige a la página de inicio
+    }
 
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
@@ -73,7 +80,9 @@ export default function Login({ users, config }) {
                         </Link>
                         <Link href="/Configuracion" legacyBehavior>
                             <a className="text-lg font-semibold text-white hover:underline">Configuración</a>
-                        </Link>
+                        </Link><button className="text-lg font-semibold hover:underline flex items-center" onClick={() => handleCerrarSesion()}>
+                        <IoIosLogOut size={25}/>
+                    </button>
                     </div>
                 </div>
             </header>

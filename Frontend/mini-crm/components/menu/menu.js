@@ -1,5 +1,7 @@
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
+import { IoIosLogOut } from "react-icons/io";
 
 export default function Menu({config}) {
     const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
@@ -23,6 +25,11 @@ export default function Menu({config}) {
         { name: "Configuración", bgColor: "bg-red-500" },
     ];
 
+    const handleCerrarSesion = () => {
+        Cookies.remove("userData"); // Elimina la cookie "userData"
+        window.location.href = "/"; // Redirige a la página de inicio
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
             {/* Header */}
@@ -34,6 +41,9 @@ export default function Menu({config}) {
                             {item.name}
                         </a>
                     ))}
+                    <button className="text-lg font-semibold hover:underline flex items-center" onClick={() => handleCerrarSesion()}>
+                        <IoIosLogOut size={25}/>
+                    </button>
                 </div>
                 {/* Mobile Menu Icon */}
                 <button 
