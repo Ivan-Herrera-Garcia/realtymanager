@@ -59,14 +59,14 @@ asesorRouter.post("/editasesor", async (context: Context) => {
             context.response.body = { message: "Invalid request body" };
             return;
         }
-        var { _id, name, phoneNumber } = value;
+        var { _id, name, phoneNumber, email, sector } = value;
         const isExist = await registroCollection.findOne({ _id: new Bson.ObjectId(_id) });
         if (!isExist) {
             context.response.status = 400;
             context.response.body = { message: "Registro no existe" };
             return;
         }
-        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(_id) }, { $set: { name, phoneNumber } });
+        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(_id) }, { $set: { name, phoneNumber, email, sector }});
         context.response.status = 200;
         context.response.body = { message: "Registro actualizado", registro };
 

@@ -9,6 +9,7 @@ export default function NuevoInmueble({inmueblesData, config}) {
     const [price, setPrice] = useState("");
     const [operation, setOperation] = useState("venta");
     const [idAsesor, setIdAsesor] = useState(inmueblesData._id);
+    const [descripcionInmueble, setDescripcionInmueble] = useState("");
 
     const handleCrear = async () => {
         const Toast = Swal.mixin({
@@ -67,7 +68,8 @@ export default function NuevoInmueble({inmueblesData, config}) {
                     price: parseInt(price, 10),
                     operation: operation,
                     idAsesor: idAsesor,
-                    urlInmueble: urlInmueble
+                    urlInmueble: urlInmueble,
+                    descripcion: descripcionInmueble
                 })
             });
             const data = await res.json();
@@ -201,6 +203,18 @@ export default function NuevoInmueble({inmueblesData, config}) {
                             className="w-full px-4 py-2 border border-gray-300  rounded-md bg-white  text-gray-900 "
                         />
                     </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700  mb-1">Descripción</label>
+                        <textarea
+                            placeholder="Descripción del inmueble"
+                            title="Please enter a valid description (letters and numbers only)"
+                            value={descripcionInmueble}
+                            onChange={(e) => setDescripcionInmueble(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300  rounded-md bg-white  text-gray-900 "
+                            rows={4}
+                        />
+                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700  mb-1">URL del Inmueble</label>
@@ -285,8 +299,6 @@ export async function getServerSideProps(context) {
     const fixedJson = `[${text.replace(/}{/g, "},{")}]`;
 
     const data = JSON.parse(fixedJson);
-
-    console.log(data);
 
     const responseConfig = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
     const config = await responseConfig.text();

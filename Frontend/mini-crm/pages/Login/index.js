@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 import Head from 'next/head';
+import { IoMdPersonAdd } from 'react-icons/io';
 
 export default function Login({ users, config }) {
     const [usuarios, setUsuarios] = useState(users);
@@ -103,18 +104,24 @@ export default function Login({ users, config }) {
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-center p-6">
                 <div className="w-full max-w-5xl">
-                <h1 className="text-2xl font-bold mb-4">Lista de Usuarios</h1>
-                <p className="mb-4">Aquí puedes ver todos los usuarios registrados en el sistema.</p>
-                <Link href="/Login/Nuevo" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Agregar Usuario</Link>
-                <div className="my-4"></div>
-                {/* Lista de usuarios */}
-                <ul className="bg-white p-4 rounded shadow-md text-black">
-                    {usuarios.map((usuario) => (
-                        <li key={usuario._id} className="border-b py-2 px-2">
-                            <p className="font-medium">{usuario.username}</p>
-                        </li>
-                    ))}
-                </ul>
+                    <h1 className="text-2xl font-bold mb-4">Lista de Usuarios</h1>
+                    <p className="mb-4">Aquí puedes ver todos los usuarios registrados en el sistema.</p>
+                    <Link href="/Login/Nuevo" 
+                        className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 mb-4 w-fit hover:bg-blue-600 transition-colors"
+                        >
+                        <IoMdPersonAdd className="text-lg" />
+                        <span>Agregar Usuario</span>
+                    </Link>
+                    <div className="my-4"></div>
+                    {/* Lista de usuarios */}
+                    <ul className="bg-white p-4 rounded shadow-md text-black">
+                        {usuarios.map((usuario) => (
+                            <li key={usuario._id} className="border-b py-2 px-2 flex justify-between items-center">
+                                <span>{usuario.username}</span>
+                                <span className="text-gray-500">{usuario.name}</span>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </main>
 
@@ -133,7 +140,23 @@ export async function getServerSideProps() {
     const responseConfig = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
     const config = await responseConfig.text();
 
+    const responseAsesor = await fetch(`https://mini-crm-dev.deno.dev/asesor`);
+    const asesores = await responseAsesor.text();
+
+    const fixedJson = `[${asesores.replace(/}{/g, "},{")}]`;
+    const asesoresData = JSON.parse(fixedJson);
+
+    var usersData = [];
+
+    asesoresData.forEach((asesor) => {
+        var user = users.find((user) => user.idAsesor === asesor._id);
+        if (user) {
+           user.name = asesor.name;
+        }
+        usersData.push(user);
+    });
+
     return {
-        props: { users:users, config: JSON.parse(config) },
+        props: { users:usersData, config: JSON.parse(config) },
     };
 }

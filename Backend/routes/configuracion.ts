@@ -59,14 +59,14 @@ configuracionRouter.post("/editconfiguracion", async (context: Context) => {
             context.response.body = { message: "Invalid request body" };
             return;
         }
-        var { _id, primaryColor, secondaryColor, title, descripcion, urlPicture } = value;
+        var { _id, primaryColor, secondaryColor, title, descripcion, urlPicture, policy } = value;
         const isExist = await registroCollection.findOne({ _id: new Bson.ObjectId(_id) });
         if (!isExist) {
             context.response.status = 400;
             context.response.body = { message: "Registro no existe" };
             return;
         }
-        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(_id) }, { $set: { primaryColor, secondaryColor, title, descripcion, urlPicture } });
+        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(_id) }, { $set: { primaryColor, secondaryColor, title, descripcion, urlPicture, policy } });
         context.response.status = 200;
         context.response.body = { message: "Registro actualizado", registro };
 

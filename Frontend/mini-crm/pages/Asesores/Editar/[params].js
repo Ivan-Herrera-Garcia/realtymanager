@@ -19,6 +19,8 @@ export default function EditarAsesor({asesor, config}) {
 
     const [name, setName] = useState(asesor.name);
     const [phoneNumber, setPhoneNumber] = useState(asesor.phoneNumber);
+    const [email, setEmail] = useState(asesor.email);
+    const [sector, setSector] = useState(asesor.sector);
     const [error, setError] = useState(null);
 
     const handleEditar = async () => {
@@ -48,6 +50,21 @@ export default function EditarAsesor({asesor, config}) {
             });
             return;
         }
+        var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (email == "" || !regex.test(email)) {
+            Toast.fire({
+                icon: "error",
+                title: "El correo es requerido o demasiado corto"
+            });
+            return;
+        }
+        if (sector == "" || sector.length < 3) {
+            Toast.fire({
+                icon: "error",
+                title: "El sector es requerido o demasiado corto"
+            });
+            return;
+        }
 
         try {
             const res = await fetch(`https://mini-crm-dev.deno.dev/editasesor`, {
@@ -58,7 +75,9 @@ export default function EditarAsesor({asesor, config}) {
                 body: JSON.stringify({
                     _id: asesor._id,
                     name: name,
-                    phoneNumber: phoneNumber
+                    phoneNumber: phoneNumber,
+                    email: email,
+                    sector: sector
                 })
             });
             const data = await res.json();
@@ -176,6 +195,24 @@ export default function EditarAsesor({asesor, config}) {
                         className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-700"
                         value={phoneNumber} 
                         onChange={(e) => setPhoneNumber(e.target.value)} 
+                    />
+                    
+                    <label className="block text-sm font-medium text-gray-700 mt-3">Correo</label>
+                    <input 
+                        type="text" 
+                        placeholder="Correo del asesor"
+                        className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-700"
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                    />
+                    
+                    <label className="block text-sm font-medium text-gray-700 mt-3">Sector</label>
+                    <input 
+                        type="text" 
+                        placeholder="Sector del asesor (Ej. Senderos)"
+                        className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-700"
+                        value={sector} 
+                        onChange={(e) => setSector(e.target.value)} 
                     />
                     
                     {error && <p className="text-red-500 mt-2">{error}</p>}

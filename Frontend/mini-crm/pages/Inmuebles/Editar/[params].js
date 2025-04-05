@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
 
-export default function EditarInmueble({inmueble, config}) {
+export default function EditarInmueble({inmueble, config, asesores}) {
     const [error, setError] = useState(null);
-    //Para editar
     const [title, setTitle] = useState(inmueble.title);
     const [urlInmueble, setUrlInmueble] = useState(inmueble.urlInmueble);
     const [price, setPrice] = useState(inmueble.price);
+    const [asesor, setAsesor] = useState(inmueble.idAsesor);
+    const [descripcionInmueble, setDescripcionInmueble] = useState(inmueble.descripcion);
     const [operation, setOperation] = useState(inmueble.operation);
 
     const handleEditar = async () => {
@@ -58,8 +59,9 @@ export default function EditarInmueble({inmueble, config}) {
                     title: title,
                     price: parseInt(price, 10),
                     operation: operation,
-                    idAsesor: inmueble.idAsesor,
-                    urlInmueble: urlInmueble
+                    idAsesor: asesor,
+                    urlInmueble: urlInmueble,
+                    descripcion: descripcionInmueble,
                 })
             });
             const data = await res.json();
@@ -199,6 +201,18 @@ export default function EditarInmueble({inmueble, config}) {
                         className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         />
                     </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                        <textarea
+                        value={descripcionInmueble}
+                        placeholder="Descripción del inmueble"
+                        title="Descripción del inmueble"
+                        onChange={(e) => setDescripcionInmueble(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        rows={4}
+                        ></textarea>
+                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">URL del Inmueble</label>
@@ -237,6 +251,21 @@ export default function EditarInmueble({inmueble, config}) {
                         <option value="renta">Renta</option>
                         </select>
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Asesor</label>
+                        <select
+                        value={asesor}
+                        onChange={(e) => setAsesor(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        >
+                        {asesores.map((asesor) => (
+                            <option key={asesor._id} value={asesor._id}>
+                                {asesor.name}
+                            </option>
+                        ))}
+                        </select>
+                    </div>
                     </div>
 
                     <button
@@ -257,6 +286,16 @@ export default function EditarInmueble({inmueble, config}) {
 }
 
 export async function getServerSideProps(context) {
+    const response = await fetch("https://mini-crm-dev.deno.dev/asesor", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+
+    const text = await response.text(); // Obtener la respuesta en texto
+    const fixedJson = `[${text.replace(/}{/g, "},{")}]`;
+    const asesores = JSON.parse(fixedJson);
+
+
     const res = await fetch(`https://mini-crm-dev.deno.dev/inmuebles/${context.params.params}`);
     const inmueble = await res.json();
 
@@ -264,6 +303,6 @@ export async function getServerSideProps(context) {
     const config = await responseConfig.text();
 
     return {
-        props: { inmueble: inmueble[0], config: JSON.parse(config) }
+        props: { inmueble: inmueble[0], config: JSON.parse(config), asesores: asesores }
     }
 }

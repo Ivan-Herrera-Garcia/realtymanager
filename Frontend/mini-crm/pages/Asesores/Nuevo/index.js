@@ -5,6 +5,8 @@ import Head from "next/head";
 export default function NuevoAsesor({config}) {
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [email, setEmail] = useState("");
+    const [sector, setSector] = useState("");
     const [error, setError] = useState(null);
 
     const handleCrear = async () => {
@@ -34,6 +36,21 @@ export default function NuevoAsesor({config}) {
             });
             return;
         }
+        var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (email == "" || !regex.test(email)) {
+            Toast.fire({
+                icon: "error",
+                title: "El correo es requerido o demasiado corto"
+            });
+            return;
+        }
+        if (sector == "" || sector.length < 3) {
+            Toast.fire({
+                icon: "error",
+                title: "El sector es requerido o demasiado corto"
+            });
+            return;
+        }
 
         try {
             const res = await fetch(`https://mini-crm-dev.deno.dev/addasesor`, {
@@ -43,7 +60,9 @@ export default function NuevoAsesor({config}) {
                 },
                 body: JSON.stringify({
                     name: name,
-                    phoneNumber: phoneNumber
+                    phoneNumber: phoneNumber,
+                    email: email,
+                    sector: sector
                 })
             });
             const data = await res.json();
@@ -182,6 +201,24 @@ export default function NuevoAsesor({config}) {
                                 className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-800" 
                                 value={phoneNumber} 
                                 onChange={(e) => setPhoneNumber(e.target.value)} 
+                            />
+                            
+                            <label className="block text-sm font-medium text-gray-700 mt-4">Correo</label>
+                            <input 
+                                placeholder="Correo del Asesor"
+                                type="text" 
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-800" 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                            />
+                            
+                            <label className="block text-sm font-medium text-gray-700 mt-4">Sector</label>
+                            <input 
+                                placeholder="Sector del Asesor (Ej. Senderos, etc.)"
+                                type="text" 
+                                className="mt-1 p-2 w-full border border-gray-300 rounded-md text-gray-800" 
+                                value={sector} 
+                                onChange={(e) => setSector(e.target.value)} 
                             />
                         </div>
                         

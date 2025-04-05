@@ -49,6 +49,7 @@ export default function Asesores({ configuracion }) {
     const [titulo, setTitulo] = useState(configuracion.title);
     const [descripcion, setDescripcion] = useState(configuracion.descripcion);
     const [imagen, setImagen] = useState(configuracion.urlPicture);
+    const [politicas, setPoliticas] = useState(configuracion.policy);
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -205,6 +206,19 @@ export default function Asesores({ configuracion }) {
                     style={{ width: "100%", padding: "10px", fontSize: "16px", border: "1px solid #ccc" }}
                 />
                 </section>
+                
+                {/* Sección de Descripción */}
+                <section style={{ marginBottom: "20px" }}>
+                <h2 className="text-lg font-semibold text-gray-800">Politicas</h2>
+                <textarea
+                    value={politicas}
+                    className="text-lg text-gray-800"
+                    onChange={(e) => setPoliticas(e.target.value)}
+                    placeholder="Ingresa una politica de privacidad"
+                    rows="4"
+                    style={{ width: "100%", padding: "10px", fontSize: "16px", border: "1px solid #ccc" }}
+                />
+                </section>
 
                 {/* Sección de Imagen */}
                 <section style={{ marginBottom: "20px" }}>
@@ -244,6 +258,13 @@ export default function Asesores({ configuracion }) {
                               });
                               return;
                         }
+                        if (politicas == "" || politicas.length < 3) {
+                            Toast.fire({
+                              icon: "error",
+                              title: "Las politicas es obligatoria y debe tener al menos 3 caracteres"
+                            });
+                            return;
+                        }
                         const response = await fetch("https://mini-crm-dev.deno.dev/editconfiguracion", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -253,7 +274,8 @@ export default function Asesores({ configuracion }) {
                                 secondaryColor: temas[tema].split("|")[1],
                                 title: titulo,
                                 descripcion: descripcion,
-                                urlPicture: imagen
+                                urlPicture: imagen,
+                                policy: politicas,
                             })
                         });
                         const data = await response.text();
