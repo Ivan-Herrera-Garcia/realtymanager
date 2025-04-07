@@ -6,6 +6,26 @@ const inmuebleRouter = new Router();
 const registroCollection = db.collection("inmuebles");
 const { getQuery } = helpers;
 
+inmuebleRouter.post("/addVista/:id", async (context: Context) => {
+    const { id } = getQuery(context, { mergeParams: true });
+    try {
+        const isExist = await registroCollection.findOne({ _id: new Bson.ObjectId(id) });
+        if (!isExist) {
+            context.response.status = 400;
+            context.response.body = { message: "Registro no existe" };
+            return;
+        }
+        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(id) }, { $inc: { vistas: 1 } });
+        context.response.status = 200;
+        context.response.body = { message: "Registro actualizado", registro };
+
+    } catch (error: any) {
+        context.response.status = 500;
+        context.response.body = { message: "Error, consultar con el administrador", error: error.message };
+    }
+});
+
+
 // Obtener todos los asesores
 inmuebleRouter.get("/inmuebles", async (context: Context) => {
   const registros = await registroCollection.find();
@@ -40,8 +60,9 @@ inmuebleRouter.post("/addinmueble", async (context: Context) => {
             return;
         }
         var { title, price, operation, idAsesor, urlInmueble, descripcion } = value;
+        const vistas = 0;
         idAsesor = new Bson.ObjectId(idAsesor);
-        const registro = await registroCollection.insertOne({ title, price, operation, idAsesor, urlInmueble, descripcion });
+        const registro = await registroCollection.insertOne({ title, price, operation, idAsesor, urlInmueble, descripcion, vistas });
         context.response.status = 201;
         context.response.body = { message: "Registro creado", registro };
 

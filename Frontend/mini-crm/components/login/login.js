@@ -53,8 +53,8 @@ export default function Login({config, setIsLoggedIn}) {
 
   
     return (
-      <div className="flex items-center justify-center min-h-screen bg-blue-100 p-4">
-            <div className="w-full max-w-sm bg-white rounded-2xl p-6">
+      <div className="flex items-center justify-center p-4">
+            <div className="w-full max-w-sm bg-white rounded-2xl p-6 border-[10px]">
                 <h1 className={`text-2xl font-bold text-center text-neutral-800 mb-4`}>Iniciar Sesión</h1>
                 <input
                     type="text"
