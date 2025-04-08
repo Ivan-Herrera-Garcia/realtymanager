@@ -118,6 +118,16 @@ usersRouter.post("/login", async (context) => {
             return;
         }
 
+        const idAsesor = user.idAsesor.toString(); // Convertir ObjectId a string para la consulta
+        // Verificar si el usuario está activo
+        const asesor = await registroAsesorCollection.findOne({ _id: new Bson.ObjectId(idAsesor) });
+        if (asesor && asesor.status == false) {
+            context.response.status = 403;
+            context.response.body = { message: "Usuario inactivo" };
+            return;
+        }
+        // Verificar si el usuario tiene el rol de asesor
+
         // Comparar la contraseña ingresada con la almacenada
         const passwordMatch = await verifyPassword(password, user.password);
         if (!passwordMatch) {

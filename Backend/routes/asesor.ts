@@ -40,7 +40,7 @@ asesorRouter.get("/asesor/changestatus/:id", async (context: Context) => {
             context.response.body = { message: "Registro no existe" };
             return;
         }
-        const status = isExist.status || true;
+        const status = isExist.status == undefined ? true : isExist.status;
         const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(id) }, { $set: { status: !status }});
         context.response.status = 200;
         context.response.body = { message: "Registro actualizado", registro };        
