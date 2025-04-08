@@ -31,6 +31,26 @@ asesorRouter.get("/asesor/:id", async (context: Context) => {
     }
 });
 
+asesorRouter.get("/asesor/changestatus/:id", async (context: Context) => {
+    const { id } = getQuery(context, { mergeParams: true });
+    try {
+        const isExist = await registroCollection.findOne({ _id: new Bson.ObjectId(id) });
+        if (!isExist) {
+            context.response.status = 400;
+            context.response.body = { message: "Registro no existe" };
+            return;
+        }
+        const status = isExist.status || true;
+        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(id) }, { $set: { status: !status }});
+        context.response.status = 200;
+        context.response.body = { message: "Registro actualizado", registro };        
+    }
+    catch (error: any) {
+            context.response.status = 500;
+            context.response.body = { message: "Error, consultar con el administrador", error: error.message };
+    }
+});
+
 asesorRouter.post("/addasesor", async (context: Context) => {
     try {
         const body = await context.request.body();
