@@ -50,7 +50,7 @@ export default function Home({config, inmuebles, asesores}) {
       </Head>
     
       {isLoggedIn ? (
-        <Menu config={config} />
+        <Menu config={config} inmuebles={inmuebles} asesores={asesores} />
       ) : (
         <>
           {/* HEADER */}
@@ -201,7 +201,7 @@ export default function Home({config, inmuebles, asesores}) {
             className="text-white text-center py-4"
             style={{ backgroundColor: config.primaryColor }}
           >
-            ©2025 {config.title}. Todos los derechos reservados.
+            ©2025 {config.title}. Todos los derechos reservados. - <a href="/Politicas" className="text-teal-200">Políticas de Privacidad</a>
           </footer>
     
           {/* LOGIN MODAL */}

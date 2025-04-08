@@ -2,8 +2,10 @@ import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { IoIosLogOut } from "react-icons/io";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-export default function Menu({config}) {
+
+export default function Menu({config, inmuebles, asesores}) {
     const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
     const [colorSecundario, setColorSecundario] = useState(config.secondaryColor);
     const [titulo, setTitulo] = useState(config.title);
@@ -29,6 +31,17 @@ export default function Menu({config}) {
         Cookies.remove("userData"); // Elimina la cookie "userData"
         window.location.href = "/"; // Redirige a la página de inicio
     }
+
+    const asesorMap = Object.fromEntries(asesores.map(a => [a._id, a.name]));
+
+    // Contar inmuebles por asesor
+    const inmueblesPorAsesor = asesores.map(asesor => {
+        const count = inmuebles.filter(i => i.idAsesor === asesor._id).length;
+        return {
+        name: asesor.name,
+        inmuebles: count
+        };
+    });
 
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
@@ -82,29 +95,108 @@ export default function Menu({config}) {
             {/* Main Content */}
             <main className="flex-1 flex flex-col items-center justify-center p-6">
                 <p className="text-center text-gray-700 mb-6">{descripcion}</p>
-                <div className="grid grid-cols-2 gap-6 w-full max-w-lg">
+
+                {/* Tarjetas resumen */}
+                <div className="grid grid-cols-2 gap-6 w-full max-w-4xl mb-10">
                     <div className="bg-white shadow-lg rounded-xl p-6 text-center">
-                        <h2 className="text-xl font-bold text-blue-600">Número de Visitas</h2>
-                        <p className="text-gray-700 text-lg">1234</p>
+                    <h2 className="text-xl font-bold " style={{color:config.primaryColor}}>Número de Visitas</h2>
+                    <p className="text-gray-700 text-lg">{inmuebles.reduce((acc, i) => acc + (i.vistas || 0), 0)}</p>
                     </div>
                     <div className="bg-white shadow-lg rounded-xl p-6 text-center">
-                        <h2 className="text-xl font-bold text-blue-600">Lista de Asesores</h2>
-                        <p className="text-gray-700 text-lg">8 activos</p>
+                    <h2 className="text-xl font-bold " style={{color:config.primaryColor}}>Lista de Asesores</h2>
+                    <p className="text-gray-700 text-lg">{asesores.length} activos</p>
                     </div>
                     <div className="bg-white shadow-lg rounded-xl p-6 text-center">
-                        <h2 className="text-xl font-bold text-blue-600">Inmuebles Totales</h2>
-                        <p className="text-gray-700 text-lg">56</p>
+                    <h2 className="text-xl font-bold " style={{color:config.primaryColor}}>Inmuebles Totales</h2>
+                    <p className="text-gray-700 text-lg">{inmuebles.length}</p>
                     </div>
                     <div className="bg-white shadow-lg rounded-xl p-6 text-center">
-                        <h2 className={`text-xl font-bold text-blue-600`}>Inmuebles Deshabilitados</h2>
-                        <p className="text-gray-700 text-lg">12</p>
+                    <h2 className="text-xl font-bold " style={{color:config.primaryColor}}>Inmuebles Deshabilitados</h2>
+                    <p className="text-gray-700 text-lg">{
+                        inmuebles.filter(i => i.status === 'deshabilitado').length
+                    }</p>
                     </div>
                 </div>
-            </main>
+
+                <div className="flex flex-col md:flex-row gap-6 w-full items-start">
+                    {/* Gráfico de inmuebles por asesor */}
+                    <section className="w-full md:w-1/2">
+                        <h3
+                        className="text-xl font-semibold text-center mb-4"
+                        style={{ color: config.primaryColor }}
+                        >
+                        Inmuebles por Asesor
+                        </h3>
+                        <div className="bg-white shadow-md rounded-xl p-4">
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={inmueblesPorAsesor}>
+                            <XAxis
+                                dataKey="name"
+                                tick={{ fontSize: 12 }}
+                                interval={0}
+                                angle={-10}
+                                textAnchor="end"
+                            />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar
+                                dataKey="inmuebles"
+                                fill={config.secondaryColor}
+                                radius={[6, 6, 0, 0]}
+                            />
+                            </BarChart>
+                        </ResponsiveContainer>
+                        </div>
+                    </section>
+
+                    {/* Tabla de inmuebles con vistas */}
+                    <section className="w-full md:w-1/2">
+                        <h3
+                        className="text-xl font-semibold text-center mb-4"
+                        style={{ color: config.primaryColor }}
+                        >
+                        Inmuebles y Vistas
+                        </h3>
+                        <div className="overflow-x-auto bg-white shadow-md rounded-xl">
+                        <table className="min-w-full text-left text-sm" style={{ color: config.primaryColor }}>
+                            <thead className="text-white" style={{ backgroundColor: config.primaryColor }}>
+                            <tr>
+                                <th className="px-6 py-3">Título</th>
+                                <th className="px-6 py-3">Precio</th>
+                                <th className="px-6 py-3">Vistas</th>
+                                <th className="px-6 py-3">Asesor</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {inmuebles.map((i) => (
+                                <tr key={i._id} className="border-b hover:bg-gray-50">
+                                <td className="px-6 py-4 font-medium" style={{ color: config.primaryColor }}>
+                                    <a
+                                    href={i.urlInmueble}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-blue-500 underline "
+                                    >
+                                    {i.title}
+                                    </a>
+                                </td>
+                                <td className="px-6 py-4">${i.price.toLocaleString()}</td>
+                                <td className="px-6 py-4">{i.vistas ?? 0}</td>
+                                <td className="px-6 py-4">{asesorMap[i.idAsesor] ?? "Sin asignar"}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                        </div>
+                    </section>
+                    </div>
+                </main>
 
             {/* Footer */}
             <footer style={{backgroundColor: colorPrimario, color: colorSecundario}} className={`text-center py-4 mt-6 shadow-md`}>
-                <p className="text-sm">© 2025 {titulo}. Todos los derechos reservados.</p>
+                <p className="text-sm">© 2025 {titulo}. Todos los derechos reservados. </p>
+                <a href="/Politicas" className="text-teal-200">Políticas de Privacidad</a>
             </footer>
         </div>
     );
