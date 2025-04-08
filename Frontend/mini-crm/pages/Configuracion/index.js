@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import { IoIosLogOut } from "react-icons/io";
 
@@ -267,7 +267,7 @@ export default function Asesores({ configuracion }) {
                               });
                               return;
                         }
-                        if (politicas == "" || politicas.length < 3) {
+                        if (politicas == "") {
                             Toast.fire({
                               icon: "error",
                               title: "Las politicas es obligatoria y debe tener al menos 3 caracteres"
