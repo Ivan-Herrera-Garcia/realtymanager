@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineMenu } from "react-icons/ai";
 import { IoIosLogOut } from "react-icons/io";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import Link from "next/link";
 
 
 export default function Menu({config, inmuebles, asesores}) {
@@ -196,7 +197,7 @@ export default function Menu({config, inmuebles, asesores}) {
             {/* Footer */}
             <footer style={{backgroundColor: colorPrimario, color: colorSecundario}} className={`text-center py-4 mt-6 shadow-md`}>
                 <p className="text-sm">© 2025 {titulo}. Todos los derechos reservados. </p>
-                <a href="/Politicas" className="text-teal-200">Políticas de Privacidad</a>
+                <Link href="/Politicas" className="text-teal-200">Políticas de Privacidad</Link>
             </footer>
         </div>
     );

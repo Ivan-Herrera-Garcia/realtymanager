@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
-export default function Login({config, setIsLoggedIn}) {
+export default function Login({config, asesores, setIsLoggedIn}) {
 
     // const [colorPrincipal, setColorPrincipal] = React.useState(config.primaryColor);
     // const [colorSecundario, setColorSecundario] = React.useState(config.secondaryColor);
@@ -16,6 +17,18 @@ export default function Login({config, setIsLoggedIn}) {
     const [password, setPassword] = React.useState(null);
 
     async function handleLogin() {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+            },
+        });
+
       try {
           const response = await fetch("https://mini-crm-dev.deno.dev/login", {
               method: "POST",
@@ -31,10 +44,17 @@ export default function Login({config, setIsLoggedIn}) {
           const data = await response.json();
   
           if (response.ok && data) {
-            
+            Toast.fire({
+                icon: "success",
+                title: "Inicio de sesión exitoso",
+            });
             Cookies.set("userData", username, { expires: 10 }); // Guardar en la cookie
             setIsLoggedIn(true); // Actualizar el estado de inicio de sesión
           } else {
+            Toast.fire({
+                icon: "error",
+                title: data.message,
+            });
               console.error("Error en el login:", data.message);
           }
       } catch (error) {
@@ -50,7 +70,6 @@ export default function Login({config, setIsLoggedIn}) {
             passwordField.type = "password";
         }
     }
-
   
     return (
       <div className="flex items-center justify-center p-4">

@@ -5,6 +5,7 @@ import Head from "next/head";
 import Login from "../components/login/login";
 import Menu from "../components/menu/menu";
 import Cookies from "js-cookie";
+import Link from "next/link";
 
 export default function Home({config, inmuebles, asesores}) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -201,7 +202,7 @@ export default function Home({config, inmuebles, asesores}) {
             className="text-white text-center py-4"
             style={{ backgroundColor: config.primaryColor }}
           >
-            ©2025 {config.title}. Todos los derechos reservados. - <a href="/Politicas" className="text-teal-200">Políticas de Privacidad</a>
+            ©2025 {config.title}. Todos los derechos reservados. - <Link href="/Politicas" className="text-teal-200">Políticas de Privacidad</Link>
           </footer>
     
           {/* LOGIN MODAL */}
@@ -223,7 +224,7 @@ export default function Home({config, inmuebles, asesores}) {
                     Accede a tu cuenta para continuar
                   </p>
                 </div>
-                <Login config={config} setIsLoggedIn={setIsLoggedIn} />
+                <Login config={config} asesores={asesores} setIsLoggedIn={setIsLoggedIn} />
               </div>
             </div>
           )}

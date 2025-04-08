@@ -2,6 +2,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { IoIosLogOut } from "react-icons/io";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 export default function Asesores({ asesores, config}) {
     const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
@@ -24,6 +26,56 @@ export default function Asesores({ asesores, config}) {
     const handleCerrarSesion = () => {
         Cookies.remove("userData"); // Elimina la cookie "userData"
         window.location.href = "/"; // Redirige a la página de inicio
+    }
+
+    const handleChangeStatus = async (id) => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+        
+        const result = await Swal.fire({
+            title: '¿Estás seguro de cambiar el estado del asesor?',
+            text: "Se cambiará el estado del asesor.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Cambiar estado',
+            cancelButtonText: 'Cancelar'
+        })
+        if (result.isConfirmed) {
+                    const response = await fetch(`https://mini-crm-dev.deno.dev/asesor/changestatus/${id}`, {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                    const data = await response.json();
+                    if (data.message == "Registro actualizado") {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Cambio de estado exitoso'
+                        });
+                        window.location.reload(); // Recarga la página para reflejar los cambios
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Ocurrio un error al cambiar el estado'
+                        })
+                    }      
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Cambio de estado cancelado'
+                    })
+                }  
     }
 
     return (
@@ -122,6 +174,9 @@ export default function Asesores({ asesores, config}) {
                                     <Link href={`/Asesores/Editar/${asesor._id}`} legacyBehavior>
                                         <a className="text-blue-500 hover:underline">Editar</a>
                                     </Link>
+                                    <button className="text-red-500 hover:underline ml-4" onClick={() => handleChangeStatus(asesor._id)}>
+                                        {asesor.status == undefined || asesor.status == true ? "Desactivar" : "Activar"}
+                                    </button>
                                 </div>
                             </li>
                         ))}
