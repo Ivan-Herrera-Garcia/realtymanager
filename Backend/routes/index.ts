@@ -4,6 +4,7 @@ import seguimientoRouter from "./seguimiento.ts";
 import inmuebleRouter from "./inmuebles.ts";
 import usersRouter from "./users.ts";
 import configuracionRouter from "./configuracion.ts";
+import notasRouter from "./notas.ts";
 
 const router = new Router();
 
@@ -26,5 +27,8 @@ router.use(usersRouter.allowedMethods());
 
 router.use(configuracionRouter.routes());
 router.use(configuracionRouter.allowedMethods());
+
+router.use(notasRouter.routes());
+router.use(notasRouter.allowedMethods());
 
 export default router;
