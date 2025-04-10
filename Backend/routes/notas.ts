@@ -9,13 +9,13 @@ const { getQuery } = helpers;
 // Obtener todos los asesores
 notasRouter.get("/notaByAsesor/:id", async (context: Context) => {
     const { id } = getQuery(context, { mergeParams: true });
-    const registros = await registroCollection.find({ idAsesor: new Bson.ObjectId(id) });
+    const registros = await registroCollection.find({ idAsesor: id });
     context.response.body = registros;
 });
 
 notasRouter.get("/notaByInmueble/:id", async (context: Context) => {
     const { id } = getQuery(context, { mergeParams: true });
-    const registros = await registroCollection.find({ idInmueble: new Bson.ObjectId(id) });
+    const registros = await registroCollection.find({ idInmueble: id });
     context.response.body = registros;
 });
 

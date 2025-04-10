@@ -172,6 +172,12 @@ export default function Inmuebles({inmueblesData, config}) {
                             >
                                 Editar
                             </Link>
+                            <Link
+                                href={`/Notas/${inmueble._id}`}
+                                className="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-2 focus:outline-none focus:ring-green-300"
+                            >
+                                Notas
+                            </Link>
                             <a
                                 href={inmueble.urlInmueble}
                                 target="_self"
