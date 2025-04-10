@@ -128,7 +128,7 @@ export default function FichaInmueble() {
                     descripcion: body.descripcion,
                 }),
             });
-            // window.location.reload(); // Recargar la página para ver los cambios
+            window.location.reload(); // Recargar la página para ver los cambios
             setShowModal(false);
            
         } catch (err) {
