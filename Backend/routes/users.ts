@@ -135,9 +135,9 @@ usersRouter.post("/login", async (context) => {
             context.response.body = { message: "Contraseña incorrecta" };
             return;
         }
-        const userData = await getUserInfo(user.idAsesor);
+        const userInfo = await registroAsesorCollection.findOne({ _id: idAsesor });
         context.response.status = 200;
-        context.response.body = { message: "Inicio de sesión exitoso", data:userData };
+        context.response.body = { message: "Inicio de sesión exitoso", user:asesor };
     } catch (error) {
         console.error("Error en /login:", error);
         context.response.status = 500;

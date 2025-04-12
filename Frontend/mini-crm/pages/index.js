@@ -12,7 +12,6 @@ export default function Home({config, inmuebles, asesores}) {
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     useEffect(() => {
-        
         var userData = Cookies.get("userData"); // Intenta obtener la cookie "userData"
 
         if (userData) {

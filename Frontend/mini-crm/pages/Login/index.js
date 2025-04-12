@@ -156,11 +156,12 @@ export async function getServerSideProps() {
     const asesoresData = JSON.parse(fixedJson);
 
     var usersData = [];
-
     asesoresData.forEach((asesor) => {
-        var user = users.find((user) => user.idAsesor === asesor._id);
+        var user = users.find((user) => user.idAsesor == asesor._id);
         if (user) {
            user.name = asesor.name;
+        } else {
+            user = { name: asesor.name, username: "Sin cuenta" };
         }
         usersData.push(user);
     });
