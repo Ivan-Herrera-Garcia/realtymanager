@@ -15,7 +15,21 @@ export default function FichaInmueble({config}) {
     const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
     const [colorSecundario, setColorSecundario] = useState(config.secondaryColor);
     const [titulo, setTitulo] = useState(config.title);
+    const [autorNota, setAutorNota] = useState("");
 
+    useEffect(() => {
+        const autorb64 = Cookies.get("userData");
+        if (autorb64 && autorb64 != undefined) {
+            const autor = atob(autorb64);
+            const autorData = JSON.parse(autor);
+            console.log(autorData)
+            setAutorNota(autorData._id)
+        } else {
+            setAutorNota(null)
+        }
+    }, []);
+
+    
     var idUrl = null;
 
     useEffect(() => {
@@ -127,7 +141,7 @@ export default function FichaInmueble({config}) {
                 body: endpoint == '/addNota' ? JSON.stringify({
                     title: body.title,
                     descripcion: body.descripcion,
-                    idAsesor: inmuebles[0].idAsesor,
+                    idAsesor: autorNota ? autorNota : inmuebles[0].idAsesor,
                     idInmueble: inmuebles[0]._id,
                 }) : JSON.stringify({
                     _id: body._id,
@@ -269,7 +283,10 @@ export default function FichaInmueble({config}) {
                                         <span className="text-gray-500 text-sm">{getAsesor(nota.idAsesor)}</span><br/>
                                         <strong>{nota.title}</strong>
                                         <p>{nota.descripcion}</p>
-                                        <button onClick={() => openModal(nota)} className="text-blue-600 underline text-sm mt-1">Editar</button>
+                                        {
+                                            autorNota == nota.idAsesor &&
+                                            <button onClick={() => openModal(nota)} className="text-blue-600 underline text-sm mt-1">Editar</button>
+                                        }
                                     </li>
                                 ))}
                             </ul>
