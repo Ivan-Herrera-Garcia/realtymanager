@@ -5,6 +5,7 @@ import inmuebleRouter from "./inmuebles.ts";
 import usersRouter from "./users.ts";
 import configuracionRouter from "./configuracion.ts";
 import notasRouter from "./notas.ts";
+import solicitudesRouter from "./solicitudes.ts";
 
 const router = new Router();
 
@@ -30,5 +31,8 @@ router.use(configuracionRouter.allowedMethods());
 
 router.use(notasRouter.routes());
 router.use(notasRouter.allowedMethods());
+
+router.use(solicitudesRouter.routes());
+router.use(solicitudesRouter.allowedMethods());
 
 export default router;
