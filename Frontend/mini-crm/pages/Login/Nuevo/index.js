@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import Head from "next/head";
 import { IoIosLogOut } from 'react-icons/io';
 
-export default function NuevoUsuario({ asesores, config }) {
+export default function NuevoUsuario({ asesores, config, users }) {
     const [error, setError] = useState(null);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -30,6 +30,14 @@ export default function NuevoUsuario({ asesores, config }) {
             });
             return;
         } 
+
+        if (users.some(user => user.username === username)) {
+            Toast.fire({
+                icon: "error",
+                title: "El nombre de usuario ya existe"
+            });
+            return;
+        }
 
         if (password.length < 8) {
             Toast.fire({
@@ -281,6 +289,7 @@ export async function getServerSideProps() {
 
     const responseConfig = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
     const config = await responseConfig.text();
-
-    return { props: { asesores: asesorSinUser, config: JSON.parse(config) } };
+    console.log(asesorSinUser)
+    console.log(users)
+    return { props: { asesores: asesorSinUser, config: JSON.parse(config), users:users } };
 }

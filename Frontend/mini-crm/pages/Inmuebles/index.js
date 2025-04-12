@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { IoIosLogOut } from "react-icons/io";
+import Cookies from "js-cookie";
 
 export default function Inmuebles({inmueblesData, config}) {
     const [inmuebles, setInmuebles] = useState(inmueblesData);

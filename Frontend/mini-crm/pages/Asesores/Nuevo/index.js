@@ -3,7 +3,7 @@ import Link from "next/link";
 import Head from "next/head";
 import { IoIosLogOut } from "react-icons/io";
 
-export default function NuevoAsesor({config}) {
+export default function NuevoAsesor({config, asesores}) {
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
@@ -37,6 +37,23 @@ export default function NuevoAsesor({config}) {
             });
             return;
         }
+
+        if (asesores.some(user => user.phoneNumber === phoneNumber)) {
+            Toast.fire({
+                icon: "error",
+                title: "El teléfono ya está registrado"
+            });
+            return;
+        }
+
+        if (asesores.some(user => user.email === email)) {
+            Toast.fire({
+                icon: "error",
+                title: "El correo ya está registrado"
+            });
+            return;
+        }
+
         var regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (email == "" || !regex.test(email)) {
             Toast.fire({
@@ -255,7 +272,18 @@ export default function NuevoAsesor({config}) {
 export async function getServerSideProps() {
     const response = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
     const config = await response.text();
+
+    const responseAsesor = await fetch("https://mini-crm-dev.deno.dev/asesor", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+
+    const text = await responseAsesor.text(); 
+
+    const fixedJson = `[${text.replace(/}{/g, "},{")}]`; 
+
+    const data = JSON.parse(fixedJson);
     return {
-        props: { config: JSON.parse(config) },
+        props: { config: JSON.parse(config), asesores:data },
     };
 }

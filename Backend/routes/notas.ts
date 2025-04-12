@@ -15,7 +15,7 @@ notasRouter.get("/notaByAsesor/:id", async (context: Context) => {
 
 notasRouter.get("/notaByInmueble/:id", async (context: Context) => {
     const { id } = getQuery(context, { mergeParams: true });
-    const registros = await registroCollection.find({ idInmueble: id });
+    const registros = await registroCollection.find({ idInmueble: new Bson.ObjectId(id) });
     context.response.body = registros;
 });
 

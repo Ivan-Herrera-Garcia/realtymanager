@@ -48,7 +48,8 @@ export default function Login({config, asesores, setIsLoggedIn}) {
                 icon: "success",
                 title: "Inicio de sesión exitoso",
             });
-            Cookies.set("userData", username, { expires: 10 }); // Guardar en la cookie
+            const userBase64 = btoa(JSON.stringify(data.user)); // Convertir el objeto a Base64
+            Cookies.set("userData", userBase64, { expires: 10 }); // Guardar en la cookie
             setIsLoggedIn(true); // Actualizar el estado de inicio de sesión
           } else {
             Toast.fire({
@@ -72,33 +73,44 @@ export default function Login({config, asesores, setIsLoggedIn}) {
     }
   
     return (
-      <div className="flex items-center justify-center p-4">
-            <div className="w-full max-w-sm bg-white rounded-2xl p-6 border-[10px]">
-                <h1 className={`text-2xl font-bold text-center text-neutral-800 mb-4`}>Iniciar Sesión</h1>
-                <input
-                    type="text"
-                    placeholder="Usuario"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md mb-3 text-slate-600"
-                />
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={password}
-                    id="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md mb-3 text-slate-800"
-                />
-                <label className="text-slate-600 mr-2">Mostrar contraseña</label>
-                <input type="checkbox" onClick={showpwd}/>
-                <button
-                    onClick={handleLogin}
-                    className={`w-full bg-slate-600 shadow-lg py-2 hover:opacity-55 rounded-md transition`}
-                >
-                    Ingresar
-                </button>
-            </div>
+        <div className="flex items-center justify-center p-4">
+        <div className="w-full max-w-sm bg-white rounded-2xl p-6 border-[10px]">
+          <h1 className="text-2xl font-bold text-center text-neutral-800 mb-4">Iniciar Sesión</h1>
+          
+          {/* FORMULARIO */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // Evita que se recargue la página
+              handleLogin();      // Llama a tu función
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Usuario"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md mb-3 text-slate-600"
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md mb-3 text-slate-800"
+            />
+            <label className="text-slate-600 mr-2">Mostrar contraseña</label>
+            <input type="checkbox" onClick={showpwd} className="mb-4" />
+      
+            <button
+              type="submit"
+              className="w-full bg-slate-600 shadow-lg py-2 hover:opacity-55 rounded-md transition"
+            >
+              Ingresar
+            </button>
+          </form>
         </div>
+      </div>
+      
     );
 }
