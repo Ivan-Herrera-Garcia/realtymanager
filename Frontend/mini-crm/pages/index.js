@@ -7,9 +7,14 @@ import Menu from "../components/menu/menu";
 import Cookies from "js-cookie";
 import Link from "next/link";
 
-export default function Home({config, inmuebles, asesores}) {
+export default function Home({config, inmuebles, asesores, solicitudes}) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         var userData = Cookies.get("userData"); // Intenta obtener la cookie "userData"
@@ -34,6 +39,79 @@ export default function Home({config, inmuebles, asesores}) {
       return formatter.format(price);
   }
 
+  const handleCrear = async () => {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+
+    if (name == "" || name.length < 3) {
+        Toast.fire({
+            icon: "error",
+            title: "El título es obligatorio y debe tener al menos 3 caracteres."
+        });
+        return;
+    }
+
+    if (email == "" || !email.includes("@")) {
+        Toast.fire({
+            icon: "error",
+            title: "La URL del inmueble es obligatoria y debe comenzar con http o https."
+        });
+        return;
+    }
+
+    if (message == "" || message.length < 5) {
+        Toast.fire({
+            icon: "error",
+            title: "La descripción es obligatoria y debe tener al menos 5 caracteres."
+        });
+        return;
+    }
+    
+    if (phone == "" || phone.length != 10 || phone.length != 9) {
+        Toast.fire({
+            icon: "error",
+            title: "El teléfono es obligatorio y debe tener 9 o 10 dígitos."
+        });
+        return;
+    }
+
+    try {
+        const res = await fetch(`https://mini-crm-dev.deno.dev/addSolicitud`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                message: message,
+                phone: phone,
+            })
+        });
+        const data = await res.json();
+        if (data && data != null) {
+            Toast.fire({
+                icon: "success",
+                title: "Solicitud creada con éxito."
+            });
+            window.location.href = "/";
+        } else {
+            setError(data.error);
+        }
+    } catch (error) {
+        setError(error);
+    }
+}
+
     return (
       <div className="min-h-screen flex flex-col bg-blue-50">
       <Head>
@@ -50,7 +128,7 @@ export default function Home({config, inmuebles, asesores}) {
       </Head>
     
       {isLoggedIn ? (
-        <Menu config={config} inmuebles={inmuebles} asesores={asesores} />
+        <Menu config={config} inmuebles={inmuebles} asesores={asesores} solicitudes={solicitudes} />
       ) : (
         <>
           {/* HEADER */}
@@ -183,16 +261,59 @@ export default function Home({config, inmuebles, asesores}) {
               </p>
             </section>
     
-            <section className="text-center pb-16 bg-white">
-              <h3
-                className="text-2xl font-semibold mb-2"
-                style={{ color: config.primaryColor }}
-              >
-                ¿No tienes cuenta?
-              </h3>
-              <p className="text-gray-700">
-                Contacta a tu administrador para obtener acceso.
-              </p>
+            <section className="text-center pb-16 bg-white flex flex-col items-center">
+              <div className="mb-8">
+                <h3 className="text-2xl font-semibold mb-2" style={{ color: config.primaryColor }}>
+                  ¿No tienes cuenta?
+                </h3>
+                <p className="text-gray-700 mb-6">
+                  Contacta a tu administrador para obtener acceso.
+                </p>
+              </div>
+
+              <div className="bg-gray-100 rounded-xl p-6 max-w-lg mx-auto">
+                <h4 className="text-xl font-semibold text-slate-800 mb-4">
+                  ¿Quieres vender tus propiedades? ¿O estás buscando comprar?
+                </h4>
+                <p className="text-gray-600 mb-6">
+                  Forma parte de nosotros o déjanos ayudarte a encontrar tu propiedad ideal. Déjanos tus datos y te contactaremos.
+                </p>
+                
+                <form className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Nombre completo"
+                    className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    onchange={(e) => setName(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    maxLength={10}
+                    placeholder="Numero de teléfono"
+                    className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    onchange={(e) => setPhone(e.target.value)}
+                  />
+                  <input
+                    type="email"
+                    placeholder="Correo electrónico"
+                    className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    onchange={(e) => setEmail(e.target.value)}
+                  />
+                  <textarea
+                    placeholder="¿Qué estás buscando o cómo te gustaría participar?"
+                    rows={4}
+                    className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    onchange={(e) => setMessage(e.target.value)}
+                  ></textarea>
+                  <button
+                    type="submit"
+                    className="bg-slate-600 text-white w-full py-2 rounded-md hover:opacity-80 transition"
+                    onClick={handleCrear}
+                  >
+                    Enviar solicitud
+                  </button>
+                </form>
+              </div>
             </section>
           </main>
     
@@ -246,7 +367,10 @@ export async function getServerSideProps() {
     const asesores = await responseAsesores.text();
     const fixedJsonAsesores = `[${asesores.replace(/}{/g, "},{")}]`; 
 
+    const responseSolicitudes = await fetch(`https://mini-crm-dev.deno.dev/getSolicitudes`);
+    const configSolicitudes = await responseSolicitudes.text();
+
     return {
-        props: { config: JSON.parse(config), inmuebles: JSON.parse(fixedJson), asesores: JSON.parse(fixedJsonAsesores) }, // Pasar la configuración como props
+        props: { config: JSON.parse(config), inmuebles: JSON.parse(fixedJson), asesores: JSON.parse(fixedJsonAsesores), solicitudes: JSON.parse(configSolicitudes) }, // Pasar la configuración como props
     };
 }

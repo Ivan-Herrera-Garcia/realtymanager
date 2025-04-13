@@ -6,19 +6,33 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } fro
 import Link from "next/link";
 
 
-export default function Menu({config, inmuebles, asesores}) {
+
+export default function Menu({config, inmuebles, asesores, solicitudes}) {
+    const [mensajes, setMensajes] = useState([solicitudes]);
     const [colorPrimario, setColorPrimario] = useState(config.primaryColor);
     const [colorSecundario, setColorSecundario] = useState(config.secondaryColor);
     const [titulo, setTitulo] = useState(config.title);
     const [descripcion, setDescripcion] = useState(config.descripcion);
 
+    const [tomada, setTomada] = useState(JSON.parse(atob(Cookies.get("userData")))?.name || null);
+
     useEffect(() => {
-        console.log(config);
         setColorPrimario(config.primaryColor);
         setColorSecundario(config.secondaryColor);
         setTitulo(config.title);
         setDescripcion(config.descripcion);
-    }, [config]);
+
+        const autorb64 = Cookies.get("userData");
+        if (autorb64 && autorb64 != undefined) {
+            const autor = atob(autorb64);
+            const autorData = JSON.parse(autor);
+            const autorName = autorData.name;
+            setTomada(autorName);
+        } else {
+            setTomada(null)
+        }
+
+    }, [config, Cookies.get("userData")]);
     
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -43,6 +57,28 @@ export default function Menu({config, inmuebles, asesores}) {
         inmuebles: count
         };
     });
+
+    const cambiarVista = async (id) => {
+        try {
+          const res = await fetch("https://mini-crm-dev.deno.dev/changeVista", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id, tomada: tomada }),
+          });
+      
+          if (!res.ok) throw new Error("Error al cambiar la vista");
+      
+          // Podrías recargar los mensajes o actualizar estado local aquí
+          alert("Vista actualizada correctamente");
+          // Ideal: volver a cargar los mensajes desde la API
+        } catch (error) {
+          console.error(error);
+          alert("Hubo un error al cambiar la vista");
+        }
+      };
+      
 
     return (
         <div className="min-h-screen flex flex-col bg-blue-100">
@@ -192,6 +228,59 @@ export default function Menu({config, inmuebles, asesores}) {
                         </div>
                     </section>
                     </div>
+                    <section className="w-full md:w-1/2">
+                        <h3
+                            className="text-xl font-semibold text-center mb-4"
+                            style={{ color: config.primaryColor }}
+                        >
+                            Solicitudes
+                        </h3>
+                        <div className="overflow-x-auto bg-white shadow-md rounded-xl">
+                            <table
+                            className="min-w-full text-left text-sm"
+                            style={{ color: config.primaryColor }}
+                            >
+                            <thead
+                                className="text-white"
+                                style={{ backgroundColor: config.primaryColor }}
+                            >
+                                <tr>
+                                <th className="px-6 py-3">Nombre</th>
+                                <th className="px-6 py-3">Telefono</th>
+                                <th className="px-6 py-3">Correo</th>
+                                <th className="px-6 py-3">Mensaje</th>
+                                <th className="px-6 py-3">Tomada</th>
+                                <th className="px-6 py-3">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {mensajes.map((msg) => (
+                                <tr key={msg._id} className="border-b hover:bg-gray-50">
+                                    <td className="px-6 py-4">{msg.name}</td>
+                                    <td className="px-6 py-4">{msg.phone}</td>
+                                    <td className="px-6 py-4">{msg.email}</td>
+                                    <td className="px-6 py-4">{msg.message}</td>
+                                    <td className="px-6 py-4">
+                                    {msg.vistas === 1 ? "Vista por " + msg.tomada : "No se ha visto"}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        { msg.vistas === 1 ? 
+                                            <button
+                                                onClick={() => cambiarVista(msg._id)}
+                                                className="px-3 py-1 bg-slate-600 text-white rounded-md hover:opacity-80 transition"
+                                            >
+                                                Cambiar estado
+                                            </button> 
+                                            :
+                                            <td className="px-6 py-4">Solicitud vista por: </td>
+                                        }
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                            </table>
+                        </div>
+                        </section>
                 </main>
 
             {/* Footer */}

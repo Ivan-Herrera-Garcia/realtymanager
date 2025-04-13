@@ -26,9 +26,9 @@ solicitudesRouter.post("/addSolicitud", async (context: Context) => {
             context.response.body = { message: "Invalid request body" };
             return;
         }
-        var { name, email, message } = value;
+        var { name, email, message, phone } = value;
         const vistas = 0;
-        const registro = await registroCollection.insertOne({ name, email, message, vistas: vistas });
+        const registro = await registroCollection.insertOne({ name, email, message, phone,  vistas: vistas, tomada: false });
         context.response.status = 201;
         context.response.body = { message: "Registro creado", registro };
 
@@ -47,14 +47,19 @@ solicitudesRouter.post("/changeVista", async (context: Context) => {
             context.response.body = { message: "Invalid request body" };
             return;
         }
-        const { id } = value;
+        const { id, tomada } = value;
         const isExist = await registroCollection.findOne({ _id: new Bson.ObjectId(id) });
         if (!isExist) {
             context.response.status = 400;
             context.response.body = { message: "Registro no existe" };
             return;
         }
-        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(id) }, { $inc: { vistas: 1 } });
+        const registro = await registroCollection.updateOne({ _id: new Bson.ObjectId(id) }, { $inc: { vistas: 1 }, $set: { tomada: tomada } });
+        if (!registro) {
+            context.response.status = 400;
+            context.response.body = { message: "Error al actualizar el registro" };
+            return;
+        }
         context.response.status = 200;
         context.response.body = { message: "Registro actualizado", registro };
     } catch (error: any) {
