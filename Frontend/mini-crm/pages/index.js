@@ -52,10 +52,10 @@ export default function Home({config, inmuebles, asesores, solicitudes}) {
         }
       });
 
-    if (name == "" || name.length < 3) {
+    if (name == "" || name.length <= 3) {
         Toast.fire({
             icon: "error",
-            title: "El título es obligatorio y debe tener al menos 3 caracteres."
+            title: "El nombre es obligatorio y debe tener al menos 3 caracteres."
         });
         return;
     }
@@ -63,7 +63,7 @@ export default function Home({config, inmuebles, asesores, solicitudes}) {
     if (email == "" || !email.includes("@")) {
         Toast.fire({
             icon: "error",
-            title: "La URL del inmueble es obligatoria y debe comenzar con http o https."
+            title: "El correo electrónico es obligatorio y debe ser válido."
         });
         return;
     }
@@ -76,7 +76,7 @@ export default function Home({config, inmuebles, asesores, solicitudes}) {
         return;
     }
     
-    if (phone == "" || phone.length != 10 || phone.length != 9) {
+    if (phone == "" || (phone.length != 10 && phone.length != 9)) {
         Toast.fire({
             icon: "error",
             title: "El teléfono es obligatorio y debe tener 9 o 10 dígitos."
@@ -103,7 +103,7 @@ export default function Home({config, inmuebles, asesores, solicitudes}) {
                 icon: "success",
                 title: "Solicitud creada con éxito."
             });
-            window.location.href = "/";
+            window.location.reload(); // Recargar la página después de enviar la solicitud
         } else {
             setError(data.error);
         }
@@ -284,26 +284,26 @@ export default function Home({config, inmuebles, asesores, solicitudes}) {
                     type="text"
                     placeholder="Nombre completo"
                     className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    onchange={(e) => setName(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                   />
                   <input
                     type="text"
                     maxLength={10}
                     placeholder="Numero de teléfono"
                     className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    onchange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
                   <input
                     type="email"
                     placeholder="Correo electrónico"
                     className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    onchange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <textarea
                     placeholder="¿Qué estás buscando o cómo te gustaría participar?"
                     rows={4}
                     className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    onchange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => setMessage(e.target.value)}
                   ></textarea>
                   <button
                     type="submit"
@@ -360,15 +360,26 @@ export async function getServerSideProps() {
     const config = await response.text();
 
     const responseInmuebles = await fetch(`https://mini-crm-dev.deno.dev/inmuebles`);
-    const inmuebles = await responseInmuebles.text();
+    var inmuebles = await responseInmuebles.text();
+    if (inmuebles == undefined) {
+        inmuebles = "[]"
+    }
     const fixedJson = `[${inmuebles.replace(/}{/g, "},{")}]`;
 
     const responseAsesores = await fetch(`https://mini-crm-dev.deno.dev/asesor`);
-    const asesores = await responseAsesores.text();
+    var asesores = await responseAsesores.text();
+    if (asesores == undefined) {
+        asesores = "[]"
+    }
     const fixedJsonAsesores = `[${asesores.replace(/}{/g, "},{")}]`; 
+    
 
     const responseSolicitudes = await fetch(`https://mini-crm-dev.deno.dev/getSolicitudes`);
-    const configSolicitudes = await responseSolicitudes.text();
+    var configSolicitudes = await responseSolicitudes.text();
+    
+    if (configSolicitudes == undefined) {
+        configSolicitudes = "[]"
+    }
 
     return {
         props: { config: JSON.parse(config), inmuebles: JSON.parse(fixedJson), asesores: JSON.parse(fixedJsonAsesores), solicitudes: JSON.parse(configSolicitudes) }, // Pasar la configuración como props

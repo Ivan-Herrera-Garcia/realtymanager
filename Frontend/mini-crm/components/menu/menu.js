@@ -228,59 +228,58 @@ export default function Menu({config, inmuebles, asesores, solicitudes}) {
                         </div>
                     </section>
                     </div>
-                    <section className="w-full md:w-1/2">
-                        <h3
-                            className="text-xl font-semibold text-center mb-4"
-                            style={{ color: config.primaryColor }}
-                        >
-                            Solicitudes
-                        </h3>
-                        <div className="overflow-x-auto bg-white shadow-md rounded-xl">
-                            <table
-                            className="min-w-full text-left text-sm"
-                            style={{ color: config.primaryColor }}
-                            >
-                            <thead
-                                className="text-white"
-                                style={{ backgroundColor: config.primaryColor }}
-                            >
-                                <tr>
-                                <th className="px-6 py-3">Nombre</th>
-                                <th className="px-6 py-3">Telefono</th>
-                                <th className="px-6 py-3">Correo</th>
-                                <th className="px-6 py-3">Mensaje</th>
-                                <th className="px-6 py-3">Tomada</th>
-                                <th className="px-6 py-3">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {mensajes.map((msg) => (
-                                <tr key={msg._id} className="border-b hover:bg-gray-50">
-                                    <td className="px-6 py-4">{msg.name}</td>
-                                    <td className="px-6 py-4">{msg.phone}</td>
-                                    <td className="px-6 py-4">{msg.email}</td>
-                                    <td className="px-6 py-4">{msg.message}</td>
-                                    <td className="px-6 py-4">
-                                    {msg.vistas === 1 ? "Vista por " + msg.tomada : "No se ha visto"}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        { msg.vistas === 1 ? 
-                                            <button
-                                                onClick={() => cambiarVista(msg._id)}
-                                                className="px-3 py-1 bg-slate-600 text-white rounded-md hover:opacity-80 transition"
-                                            >
-                                                Cambiar estado
-                                            </button> 
-                                            :
-                                            <td className="px-6 py-4">Solicitud vista por: </td>
-                                        }
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
-                            </table>
-                        </div>
-                        </section>
+                    {
+                        solicitudes.length == 0 ? null :
+                            <section className="w-full md:w-1/2">
+                                <h3
+                                    className="text-xl font-semibold text-center mb-4"
+                                    style={{ color: config.primaryColor }}
+                                >
+                                    Solicitudes
+                                </h3>
+                                <div className="overflow-x-auto bg-white shadow-md rounded-xl">
+                                    <table
+                                    className="min-w-full text-left text-sm"
+                                    style={{ color: config.primaryColor }}
+                                    >
+                                    <thead
+                                        className="text-white"
+                                        style={{ backgroundColor: config.primaryColor }}
+                                    >
+                                        <tr>
+                                        <th className="px-6 py-3">Nombre</th>
+                                        <th className="px-6 py-3">Telefono</th>
+                                        <th className="px-6 py-3">Correo</th>
+                                        <th className="px-6 py-3">Mensaje</th>
+                                        <th className="px-6 py-3">Tomada</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {mensajes.map((msg) => (
+                                        <tr key={msg._id} className="border-b hover:bg-gray-50">
+                                            <td className="px-6 py-4">{msg.name}</td>
+                                            <td className="px-6 py-4">{msg.phone}</td>
+                                            <td className="px-6 py-4">{msg.email}</td>
+                                            <td className="px-6 py-4">{msg.message}</td>
+                                            <td className="px-6 py-4">
+                                                { msg.vistas === 0 ? 
+                                                    <button
+                                                        onClick={() => cambiarVista(msg._id)}
+                                                        className="px-3 py-1 bg-slate-600 text-white rounded-md hover:opacity-80 transition"
+                                                    >
+                                                        Tomar Solicitud
+                                                    </button> 
+                                                    :
+                                                    <td className="px-6 py-4">Tomada por: <strong>{msg.tomada}</strong></td>
+                                                }
+                                            </td>
+                                        </tr>
+                                        ))}
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                    }
                 </main>
 
             {/* Footer */}
