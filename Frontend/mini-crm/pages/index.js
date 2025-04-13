@@ -361,14 +361,14 @@ export async function getServerSideProps() {
 
     const responseInmuebles = await fetch(`https://mini-crm-dev.deno.dev/inmuebles`);
     var inmuebles = await responseInmuebles.text();
-    if (inmuebles == undefined) {
+    if (inmuebles == undefined || inmuebles == null || inmuebles == "" ) {
         inmuebles = "[]"
     }
     const fixedJson = `[${inmuebles.replace(/}{/g, "},{")}]`;
 
     const responseAsesores = await fetch(`https://mini-crm-dev.deno.dev/asesor`);
     var asesores = await responseAsesores.text();
-    if (asesores == undefined) {
+    if (asesores == undefined || asesores == null || asesores == "" ) {
         asesores = "[]"
     }
     const fixedJsonAsesores = `[${asesores.replace(/}{/g, "},{")}]`; 
@@ -377,7 +377,7 @@ export async function getServerSideProps() {
     const responseSolicitudes = await fetch(`https://mini-crm-dev.deno.dev/getSolicitudes`);
     var configSolicitudes = await responseSolicitudes.text();
     
-    if (configSolicitudes == undefined) {
+    if (configSolicitudes == undefined || configSolicitudes == null || configSolicitudes == "" ) {
         configSolicitudes = "[]"
     }
 
