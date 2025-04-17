@@ -28,7 +28,8 @@ solicitudesRouter.post("/addSolicitud", async (context: Context) => {
         }
         var { name, email, message, phone } = value;
         const vistas = 0;
-        const registro = await registroCollection.insertOne({ name, email, message, phone,  vistas: vistas, tomada: false });
+        const created = new Date();
+        const registro = await registroCollection.insertOne({ name, email, message, phone,  vistas: vistas, tomada: false, created });
         context.response.status = 201;
         context.response.body = { message: "Registro creado", registro };
 

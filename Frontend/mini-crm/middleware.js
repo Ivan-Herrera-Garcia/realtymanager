@@ -11,7 +11,6 @@ export function middleware(req) {
     '/Configuracion',
     '/Inmuebles',
     '/Notas',
-    '/Politicas',
     '/Login',
   ];
 
@@ -34,7 +33,6 @@ export const config = {
     '/Configuracion/:path*',
     '/Inmuebles/:path*',
     '/Notas/:path*',
-    '/Politicas/:path*',
     '/Login/:path*',
     ],
   };

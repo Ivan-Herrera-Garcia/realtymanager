@@ -49,7 +49,8 @@ notasRouter.post("/addNota", async (context: Context) => {
         var { title, descripcion, idAsesor, idInmueble } = value;
         idAsesor = new Bson.ObjectId(idAsesor);
         idInmueble = new Bson.ObjectId(idInmueble);
-        const registro = await registroCollection.insertOne({ title, descripcion, idAsesor, idInmueble });
+        const created = new Date();
+        const registro = await registroCollection.insertOne({ title, descripcion, idAsesor, idInmueble, created });
         context.response.status = 201;
         context.response.body = { message: "Registro creado", registro };
 

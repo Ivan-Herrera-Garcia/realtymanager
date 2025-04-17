@@ -61,8 +61,9 @@ inmuebleRouter.post("/addinmueble", async (context: Context) => {
         }
         var { title, price, operation, idAsesor, urlInmueble, descripcion } = value;
         const vistas = 0;
+        const created = new Date();
         idAsesor = new Bson.ObjectId(idAsesor);
-        const registro = await registroCollection.insertOne({ title, price, operation, idAsesor, urlInmueble, descripcion, vistas });
+        const registro = await registroCollection.insertOne({ title, price, operation, idAsesor, urlInmueble, descripcion, vistas, created });
         context.response.status = 201;
         context.response.body = { message: "Registro creado", registro };
 
