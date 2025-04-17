@@ -167,13 +167,41 @@ export default function Inmuebles({inmueblesData, config}) {
                             </p>
                             <div className="grid grid-cols-2 gap-2">
                             <Link
-                                href={`/Inmuebles/Editar/${inmueble._id}`}
+                                 href={inmueble.active ? `/Inmuebles/Editar/${inmueble._id}` : "#"}
+                                 onClick={(e) => {
+                                     if (!inmueble.active) {
+                                         e.preventDefault();
+                                         Swal.fire({
+                                             icon: "info",
+                                             title: "Este inmueble está inactivo",
+                                             text: "No puedes editar un inmueble desactivado.",
+                                             timer: 2500,
+                                             showConfirmButton: false,
+                                             toast: true,
+                                             position: "top-end"
+                                         });
+                                     }
+                                 }}
                                 className="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-2 focus:outline-none focus:ring-green-300"
                             >
                                 Editar
                             </Link>
                             <Link
-                                href={`/Notas/${inmueble._id}`}
+                                href={inmueble.active ? `/Notas/${inmueble._id}` : "#"}
+                                onClick={(e) => {
+                                    if (!inmueble.active) {
+                                        e.preventDefault();
+                                        Swal.fire({
+                                            icon: "info",
+                                            title: "Este inmueble está inactivo",
+                                            text: "No puedes ver las notas de un inmueble desactivado.",
+                                            timer: 2500,
+                                            showConfirmButton: false,
+                                            toast: true,
+                                            position: "top-end"
+                                        });
+                                    }
+                                }}
                                 className="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-2 focus:outline-none focus:ring-green-300"
                             >
                                 Notas
