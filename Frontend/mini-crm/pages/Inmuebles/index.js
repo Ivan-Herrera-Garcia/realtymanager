@@ -7,7 +7,6 @@ import Cookies from "js-cookie";
 export default function Inmuebles({inmueblesData, config}) {
     const [inmuebles, setInmuebles] = useState(inmueblesData);
     const [error, setError] = useState(null);
-    
     function priceFormat(value) {
         // Validar que sea un número válido
         const price = parseFloat(value);
@@ -166,7 +165,7 @@ export default function Inmuebles({inmueblesData, config}) {
                             <p className="text-lg font-medium text-gray-800 dark:text-white mb-3">
                             {priceFormat(inmueble.price)}
                             </p>
-                            <div className="flex gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                             <Link
                                 href={`/Inmuebles/Editar/${inmueble._id}`}
                                 className="flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-2 focus:outline-none focus:ring-green-300"
@@ -195,6 +194,77 @@ export default function Inmuebles({inmueblesData, config}) {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </a>
+                            <button
+                                onClick={async () => {
+                                    const confirm = await Swal.fire({
+                                        title: `¿Estás seguro de ${inmueble.active ? "desactivar" : "activar"} este inmueble?`,
+                                        icon: "warning",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#3085d6",
+                                        cancelButtonColor: "#d33",
+                                        confirmButtonText: "Sí, continuar",
+                                        cancelButtonText: "Cancelar"
+                                    });
+                                
+                                    if (!confirm.isConfirmed) {
+                                        Swal.fire({
+                                            toast: true,
+                                            icon: "info",
+                                            title: "Operación cancelada",
+                                            position: "top-end",
+                                            showConfirmButton: false,
+                                            timer: 2000,
+                                            timerProgressBar: true,
+                                        });
+                                        return;
+                                    }
+                                
+                                    const Toast = Swal.mixin({
+                                        toast: true,
+                                        position: "top-end",
+                                        showConfirmButton: false,
+                                        timer: 3000,
+                                        timerProgressBar: true,
+                                        didOpen: (toast) => {
+                                            toast.onmouseenter = Swal.stopTimer;
+                                            toast.onmouseleave = Swal.resumeTimer;
+                                        }
+                                    });
+                                
+                                    try {
+                                        const res = await fetch(`https://mini-crm-dev.deno.dev/inmueble/changestatus/${inmueble._id}`, {
+                                            method: "GET",
+                                        });
+                                
+                                        const result = await res.json();
+                                        console.log(result);
+                                
+                                        Toast.fire({
+                                            icon: "success",
+                                            title: `Estado cambiado a ${inmueble.active ? "Inactivo" : "Activo"}`
+                                        });
+                                
+                                        setInmuebles(prevInmuebles => prevInmuebles.map(item => {
+                                            if (item._id === inmueble._id) {
+                                                return { ...item, active: !item.active };
+                                            }
+                                            return item;
+                                        }));
+                                    } catch (error) {
+                                        Toast.fire({
+                                            icon: "error",
+                                            title: "Error al cambiar el estado"
+                                        });
+                                
+                                        console.error("Error al cambiar el estado:", error);
+                                    }
+                                }}
+                                className={`flex-1 inline-flex justify-center items-center px-3 py-2 text-sm font-medium text-white rounded-lg focus:ring-2 focus:outline-none ${
+                                    inmueble.active ? "bg-red-600 hover:bg-red-700 focus:ring-red-300" : "bg-green-600 hover:bg-green-700 focus:ring-green-300"
+                                }`}
+                            >
+                                {inmueble.active ? "Desactivar" : "Activar"}
+                            </button>
                             </div>
                         </div>
                         </div>
@@ -224,8 +294,17 @@ export async function getServerSideProps() {
 
     const data = JSON.parse(fixedJson);
     console.log(data);
+
+    const dataUpdate = data.map(inmueble => {
+        if (!("active" in inmueble)) {
+            inmueble.active = true;
+        }
+        return inmueble;
+    });
+
+
     const responseConfig = await fetch(`https://mini-crm-dev.deno.dev/configuracion`);
     const config = await responseConfig.text();
 
-    return { props: { inmueblesData: data, config: JSON.parse(config) } };
+    return { props: { inmueblesData: dataUpdate, config: JSON.parse(config) } };
 }
